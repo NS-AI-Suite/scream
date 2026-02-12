@@ -1,0 +1,18 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Create the Listener Script
+RUN echo "const dgram = require('dgram'); \
+const client = dgram.createSocket({ type: 'udp4', reuseAddr: true }); \
+const MULTICAST_IP = '239.255.77.77'; \
+const PORT = 4010; \
+client.bind(PORT, () => { \
+    client.addMembership(MULTICAST_IP); \
+    console.log('[LISTENER] Listening on ' + MULTICAST_IP + ':' + PORT); \
+}); \
+client.on('message', (msg, rinfo) => { \
+    console.log('[RX] ' + msg.length + ' bytes from ' + rinfo.address); \
+});" > listener.js
+
+CMD ["node", "listener.js"]

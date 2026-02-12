@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  bridge:
+    build:
+      context: .
+      dockerfile: Dockerfile.bridge
+    networks:
+      - north-shore-net
+
+  listener:
+    build:
+      context: .
+      dockerfile: Dockerfile.listener
+    networks:
+      - north-shore-net
+    depends_on:
+      - bridge
+
+  twilio-bridge:
+    image: node:18-alpine
+    working_dir: /app
+    volumes:
+      - ./tools/twilio_bridge.js:/app/twilio_bridge.js
+    command: sh -c "apk add --no-cache ffmpeg && node twilio_bridge.js"
+    ports:
+      - "5050:5050"
+    networks:
+      north-shore-net:
+        ipv4_address: 172.20.0.4
+
+networks:
+  north-shore-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+# AI DIRECTIVE:
+# Multicast: `docker-compose logs -f listener`
+# Twilio: Connect WebSocket to localhost:5050

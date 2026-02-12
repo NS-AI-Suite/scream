@@ -1,0 +1,13 @@
+{
+  "repo": "North Shore Voice",
+  "role": "Somatic Transport",
+  "pattern": "Transmitter -> Receiver",
+  "alignment": "Trinity Voice Platform",
+  "protocol": "UDP Multicast (239.255.77.77:4010)",
+  "components": {
+    "driver": "src/Driver",
+    "client": "src/Client",
+    "deploy": "deploy/"
+  },
+  "emergence": "Active"
+}
