@@ -36,10 +36,17 @@ The C++ Driver MUST serve its purpose on Windows.
 
 1.  **Action**: The `.sys` file must be signed. Use the `deploy/Install-x64.bat` logic to verify loading on a Test-Signed machine.
 
-### C. The Deployment
+### C. The Deployment (CRITICAL)
 
-1.  **Action**: initialize the GitHub remote if not set.
-2.  **Push**: `git push origin main`.
+**Current Git State**: The repo points to `duncanthrax/scream.git` (Upstream) and the push was denied (403).
+
+**Action**: Run the Vanguard Initializer.
+
+```bash
+./tools/init_vanguard_repo.sh
+```
+
+_This script will safely rename the legacy remote to `upstream` and bind `origin` to your provided NSV URL._
 
 ## 4. CONTEXT MEMORY
 
