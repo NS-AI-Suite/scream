@@ -3,7 +3,7 @@ Signature="$CHICAGO$"
 Class=MEDIA
 Provider=%SCR%
 ClassGUID={4d36e96c-e325-11ce-bfc1-08002be10318}
-DriverVer = 09/17/2022,10.13.51.921
+DriverVer = 02/22/2007, 6.0.6000.1
 CatalogFile=scream.cat
 
 [SourceDisksNames]
@@ -42,6 +42,10 @@ HKR,Drivers\mixer\wdmaud.drv,Driver,,wdmaud.drv
 HKR,Drivers\wave\wdmaud.drv,Description,,%Scream.DeviceDesc%
 HKR,Drivers\mixer\wdmaud.drv,Description,,%Scream.DeviceDesc%
 HKLM,%MediaCategories%\%Scream.NameGuid%,Name,,%Scream.Name%
+
+; VANGUARD CONFIGURATION (North Shore Protocol)
+HKR,Settings,MulticastAddress,,"239.255.77.77"
+HKR,Settings,MulticastPort,0x00010001,4010
 
 [Scream.I.Wave]
 AddReg=Scream.I.Wave.AddReg

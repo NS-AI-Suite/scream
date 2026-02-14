@@ -7,7 +7,7 @@
 // Defines
 //=============================================================================
 #define PCM_PAYLOAD_SIZE    1152                        // PCM payload size (divisible by 2, 3 and 4 bytes per sample * 2 channels)
-#define HEADER_SIZE         5                           // m_bSamplingFreqMarker, m_bBitsPerSampleMarker, m_bChannels, m_wChannelMask
+#define HEADER_SIZE         6                           // m_bSamplingFreqMarker, m_bBitsPerSampleMarker, m_bChannels, m_wChannelMask, m_bSequence
 #define CHUNK_SIZE          (PCM_PAYLOAD_SIZE + HEADER_SIZE)      // Add two bytes so we can send a small header with bytes/sample and sampling freq markers
 #define NUM_CHUNKS          800                         // How many payloads in ring buffer
 #define BUFFER_SIZE         CHUNK_SIZE * NUM_CHUNKS     // Ring buffer size
@@ -44,7 +44,7 @@ NTSTATUS WskSampleSyncIrpCompletionRoutine(__in PDEVICE_OBJECT Reserved, __in PI
 //=============================================================================
 
 //=============================================================================
-CSaveData::CSaveData() : m_pBuffer(NULL), m_ulOffset(0), m_ulSendOffset(0), m_fWriteDisabled(FALSE), m_socket(NULL) {
+CSaveData::CSaveData() : m_pBuffer(NULL), m_ulOffset(0), m_ulSendOffset(0), m_fWriteDisabled(FALSE), m_socket(NULL), m_bSequence(0) {
     PAGED_CODE();
 
     DPF_ENTER(("[CSaveData::CSaveData]"));
@@ -477,6 +477,7 @@ void CSaveData::WriteData(IN PBYTE pBuffer, IN ULONG ulByteCount) {
             m_pBuffer[offset + 2] = m_bChannels;
             m_pBuffer[offset + 3] = (BYTE)(m_wChannelMask    & 0xFF);
             m_pBuffer[offset + 4] = (BYTE)(m_wChannelMask>>8 & 0xFF);
+            m_pBuffer[offset + 5] = m_bSequence++;
             offset += HEADER_SIZE;
             w = ((BUFFER_SIZE - offset) < toWrite) ? (BUFFER_SIZE - offset) : toWrite;
             w = (w > PCM_PAYLOAD_SIZE) ? PCM_PAYLOAD_SIZE : w;

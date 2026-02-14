@@ -1,0 +1,21 @@
+{
+  "name": "scream-core",
+  "version": "1.0.0",
+  "description": "Vanguard Audio Transport.",
+  "main": "tools/love_stream.js",
+  "scripts": {
+    "test": "node tests/unit/protocol.test.js",
+    "signal": "node tools/love_stream.js",
+    "receiver": "node tools/listener.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "fluent-ffmpeg": "^2.1.2",
+    "ws": "^8.19.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "author": "AbëONE",
+  "license": "UNLICENSED"
+}

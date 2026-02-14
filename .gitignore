@@ -4,8 +4,10 @@
 # User-specific files
 *.suo
 *.user
-*.sln.docstates
+*.docstates
 .vs/
+node_modules/
+evidence.json
 
 # Build results
 

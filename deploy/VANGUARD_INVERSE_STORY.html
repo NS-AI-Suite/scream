@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Great Inversion</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #eef1f5; color: #1d1d1f; margin: 0; padding: 40px; line-height: 1.6; }
+        .card { max-width: 800px; margin: 0 auto; background: white; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #0071e3, #4facfe); color: white; padding: 60px 40px; text-align: center; }
+        .header h1 { margin: 0; font-size: 48px; font-weight: 800; letter-spacing: -0.02em; }
+        .header p { font-size: 22px; opacity: 0.9; margin-top: 10px; font-weight: 300; }
+        .content { padding: 50px; }
+        
+        .scenario { margin-bottom: 50px; padding: 30px; border-radius: 16px; border: 1px solid #e5e5e5; }
+        .scenario.old { background: #fff5f5; border-color: #ffcccc; }
+        .scenario.new { background: #f0fff4; border-color: #c3e6cb; border-width: 2px; box-shadow: 0 4px 12px rgba(46, 204, 113, 0.1); }
+        
+        h2 { font-size: 24px; font-weight: 700; margin-top: 0; display: flex; align-items: center; }
+        .icon { font-size: 30px; margin-right: 15px; }
+        
+        .old h2 { color: #c0392b; }
+        .new h2 { color: #27ae60; }
+        
+        .diagram { font-family: 'SF Mono', monospace; font-size: 14px; background: rgba(255,255,255,0.7); padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center; }
+        .arrow-red { color: #c0392b; font-weight: bold; }
+        .arrow-green { color: #27ae60; font-weight: bold; }
+
+        .key-takeaway { font-size: 18px; font-weight: 600; text-align: center; margin-top: 40px; color: #333; }
+        .badge { background: #0071e3; color: white; padding: 5px 12px; border-radius: 15px; font-size: 12px; vertical-align: middle; margin-left: 10px; }
+
+        .footer { text-align: center; font-size: 12px; color: #999; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div class="header">
+            <h1>The Great Inversion</h1>
+            <p>How we solved the Connectivity Crisis</p>
+        </div>
+
+        <div class="content">
+            
+            <p class="key-takeaway" style="margin-bottom: 40px;">
+                "We stopped trying to break in. We told the device to walk out."
+            </p>
+
+            <!-- THE OLD WAY -->
+            <div class="scenario old">
+                <h2><span class="icon">🚫</span> The Old Way: "Pushing"</h2>
+                <p>Imagine driving to the clinic to deliver a package (Audio). You walk up to the front door, but it's <strong>LOCKED</strong> (Firewall).</p>
+                <p>You bang on the door. You shout. You need a special Key (VPN). You need the Security Guard (IT Dept) to let you in.</p>
+                <div class="diagram">
+                    SERVER ----( PUSH )----<span class="arrow-red">&gt;| WALL |</span>---- CLINIC
+                    <br><br>
+                    <strong>RESULT:</strong> Blocked. Latency. IT Tickets. Frustration.
+                </div>
+            </div>
+
+            <!-- THE NEW WAY -->
+            <div class="scenario new">
+                <h2><span class="icon">✅</span> The New Way: "The Inverse" <span class="badge">VANGUARD</span></h2>
+                <p>Now, imagine we just stay home.</p>
+                <p>Instead of us driving there, the <strong>Clinic picks up the phone and calls US.</strong></p>
+                <p>Almost every building allows you to make a phone call <em>out</em>. The door opens from the inside. The connection is instant. We just answer the phone.</p>
+                <div class="diagram">
+                    SERVER &lt;<span class="arrow-green">------( CALLS HOME )------</span> CLINIC
+                    <br><br>
+                    <strong>RESULT:</strong> Zero Friction. Zero VPN. Instant Audio.
+                </div>
+                <p><em>Technically: The NPort Device in "TCP Client Mode" dials out to our Port 4010.</em></p>
+            </div>
+
+            <div class="key-takeaway">
+                Vanguard Driver + Inverse Mode = <span style="color:#0071e3">Freedom.</span>
+            </div>
+            
+            <div class="footer">
+                Visualized by AbëONE • Clever Convergence V3
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

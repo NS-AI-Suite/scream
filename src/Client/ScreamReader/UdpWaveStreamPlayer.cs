@@ -153,6 +153,8 @@ namespace ScreamReader
 
                 Task.Factory.StartNew(() =>
                 {
+                    byte? lastSequence = null;
+
                     while (!this.cancellationTokenSource.IsCancellationRequested)
                     {
                         try
@@ -186,7 +188,33 @@ namespace ScreamReader
                             //    this.volume = (int)(this.output.Volume * 100); // can initialize here 
                                 Debug.WriteLine("3rd volume check = {0}", this.output.Volume * 100);
                             }
-                            rsws.AddSamples(data, 5, data.Length - 5);
+
+                            // NORTH SHORE PROTOCOL V2 ADAPTION
+                            int headerSize = 5;
+                            if (data.Length == 1158) // V2 with Sequence
+                            {
+                                headerSize = 6;
+                                byte seq = data[5];
+                                if (lastSequence.HasValue)
+                                {
+                                    int diff = seq - lastSequence.Value;
+                                    if (diff < 0) diff += 256; // Wrap around
+                                    
+                                    if (diff > 1)
+                                    {
+                                        int lost = diff - 1;
+                                        // PLC: Inject Silence for lost packets
+                                        if (lost < 10) // Limit concealment to 10 packets (~25ms) to avoid massive drifts
+                                        {
+                                           rsws.AddSamples(new byte[lost * 1152], 0, lost * 1152);
+                                           Debug.WriteLine($"[PLC] Concealed {lost} packets");
+                                        }
+                                    }
+                                }
+                                lastSequence = seq;
+                            }
+
+                            rsws.AddSamples(data, headerSize, data.Length - headerSize);
                         } catch (SocketException) { } // Usually when interrupted
                         catch(Exception e)
                         {

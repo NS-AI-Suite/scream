@@ -29,43 +29,67 @@ wss.on("connection", (ws) => {
   });
 });
 
-function startInjectingAudio(ws, streamSid) {
-  console.log("[AI] Generating Voice (Simulated)...");
+async function startInjectingAudio(ws, streamSid) {
+  console.log("[AI] Acquiring Voice from Desk...");
 
-  // 1. GENERATE (Simulate AI with ffmpeg test tone)
-  // 2. TRANSCODE (Convert to 8k mulaw)
-  // 3. SEND (Base64 to Twilio)
+  try {
+    const text = "North Shore Online. I am listening.";
+    const DESK_URL = process.env.DESK_URL || "http://host.docker.internal:3000"; // Docker->Host
 
-  const ffmpeg = spawn("ffmpeg", [
-    "-re",
-    "-f",
-    "lavfi",
-    "-i",
-    "sine=frequency=440:duration=10", // Input: Tone
-    "-f",
-    "mulaw", // Output: mulaw
-    "-ar",
-    "8000", // Rate: 8k
-    "-ac",
-    "1", // Channels: 1
-    "pipe:1", // To Stdout
-  ]);
+    console.log(`[Bridge] Fetching speech from ${DESK_URL}/speak`);
 
-  ffmpeg.stdout.on("data", (chunk) => {
-    if (ws.readyState === WebSocket.OPEN && streamSid) {
-      const payload = chunk.toString("base64");
-      const mediaMessage = {
-        event: "media",
-        streamSid: streamSid,
-        media: {
-          payload: payload,
-        },
-      };
-      ws.send(JSON.stringify(mediaMessage));
-    }
-  });
+    // NATIVE FETCH (Node 18+)
+    const response = await fetch(`${DESK_URL}/speak`, {
+      method: "POST",
+      body: JSON.stringify({ text }),
+    });
 
-  ffmpeg.on("close", () => {
-    console.log("[AI] Generation Complete");
-  });
+    if (!response.ok)
+      throw new Error(`Desk Error: ${response.status} ${response.statusText}`);
+
+    // Transcode MP3 (from Desk) -> Mulaw 8k (for Twilio)
+    const ffmpeg = spawn("ffmpeg", [
+      "-i",
+      "pipe:0",
+      "-f",
+      "mulaw",
+      "-ar",
+      "8000",
+      "-ac",
+      "1",
+      "pipe:1",
+    ]);
+
+    // Pipe WebStream to Node Stream
+    const reader = response.body.getReader();
+    const pump = async () => {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          ffmpeg.stdin.end();
+          break;
+        }
+        ffmpeg.stdin.write(value);
+      }
+    };
+    pump();
+
+    ffmpeg.stdout.on("data", (chunk) => {
+      if (ws.readyState === WebSocket.OPEN && streamSid) {
+        ws.send(
+          JSON.stringify({
+            event: "media",
+            streamSid: streamSid,
+            media: { payload: chunk.toString("base64") },
+          }),
+        );
+      }
+    });
+
+    ffmpeg.stderr.on("data", (d) => {}); // Silence ffmpeg logs
+    ffmpeg.on("close", () => console.log("[AI] Speaking Complete"));
+  } catch (e) {
+    console.error("[Bridge] Failed to speak:", e.message);
+    // Fallback? No. Silence is better than noise.
+  }
 }

@@ -68,6 +68,7 @@ protected:
     BYTE                        m_bBitsPerSampleMarker;
     BYTE                        m_bChannels;
     WORD                        m_wChannelMask;
+    BYTE                        m_bSequence;
 
 public:
     CSaveData();

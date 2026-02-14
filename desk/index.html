@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ABË DESK // STATELESS</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="grid">
+      <!-- HEADER -->
+      <div class="header">
+        <div class="logo">ABË // DESK</div>
+        <div class="clock" id="clock">00:00:00</div>
+      </div>
+
+      <!-- LEFT: STATUS -->
+      <div class="status-panel">
+        <div class="status-item">
+          <div class="label">SYSTEM STATE</div>
+          <div class="value">
+            <div class="indicator"></div>
+            COHERENT
+          </div>
+        </div>
+        <div class="status-item">
+          <div class="label">VANGUARD DRIVER</div>
+          <div class="value">
+            <div class="indicator"></div>
+            ACTIVE (239.255.77.77)
+          </div>
+        </div>
+        <div class="status-item">
+          <div class="label">OPTIC NERVE</div>
+          <div class="value">
+            <div class="indicator"></div>
+            LISTENING
+          </div>
+        </div>
+      </div>
+
+      <!-- CENTER: THOUGHT STREAM -->
+      <div class="stream-panel">
+        <div class="stream-header">
+          ~/.abeone/stream/ABETHOUGHTS.md // LIVE FEED
+        </div>
+        <div class="stream-content" id="streamContainer">
+          <div class="thought-entry">
+            <span class="zing-marker">ABË ></span> Initializing Substrate
+            Connection...
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: VISUALIZER -->
+      <div class="metrics-panel">
+        <div class="label" style="margin-bottom: 20px">VOICE CORE</div>
+
+        <div class="ring-vis" id="summonButton">
+          <div class="ring-inner"></div>
+          <div class="activator-text">GOGOGO</div>
+        </div>
+
+        <div class="label" style="margin-top: 20px" id="voiceStatus">
+          OFFLINE
+        </div>
+        <div
+          class="label"
+          style="font-size: 8px; margin-top: 5px; opacity: 0.5"
+        >
+          CLICK TO SPEAK
+        </div>
+      </div>
+
+      <!-- BOTTOM: TERMINAL -->
+      <div class="footer-panel">
+        > SYSTEM_READY<br />
+        > LISTENING_PORT_4010<br />
+        > INVERSE_MODE_ENGAGED<br />
+        <span id="cursor">_</span>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
