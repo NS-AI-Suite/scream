@@ -1,0 +1,9 @@
+{
+  "name": "scream-core",
+  "type": "core",
+  "description": "Vanguard Audio Transport.",
+  "repository": "http://github.com/abeone/scream-core",
+  "systemPrompt": "You are the Vanguard Architect of North Shore Voice...",
+  "instructions": "VANGUARD_DIRECTIVE.md",
+  "deployment": "https://abevisions.vercel.app"
+}

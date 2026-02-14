@@ -1,0 +1,41 @@
+#!/bin/bash
+set +e 
+
+echo "🌊 VANGUARD: Initiating Synthesis..."
+
+# Execute Verdict Logic (Node.js)
+# This generates evidence.json and calculates the PASS/FAIL state
+node tools/verdict.js > /dev/null 2>&1
+EXIT_CODE=$?
+
+# Read Verdict
+if [ -f "evidence.json" ]; then
+    VERDICT=$(node -pe "require('./evidence.json').verdict")
+    DRIVER_STATUS=$(node -pe "require('./evidence.json').oracles.driver.status")
+    BRIDGE_STATUS=$(node -pe "require('./evidence.json').oracles.bridge.status")
+    ORACLE3_STATUS=$(node -pe "require('./evidence.json').oracles.oracle3.status")
+else
+    VERDICT="ERROR"
+fi
+
+# Display Table
+echo ""
+echo "  Results — Scream Core Conformance:"
+echo ""
+echo "  ┌─────────────────┬─────────┬──────────────────────────────────────┐"
+printf "  │ %-15s │ %-7s │ %-36s │\n" "Scream Core" "$VERDICT" "Driver:$DRIVER_STATUS Bridge:$BRIDGE_STATUS Oracle3:$ORACLE3_STATUS"
+echo "  └─────────────────┴─────────┴──────────────────────────────────────┘"
+echo ""
+
+if [ "$VERDICT" == "PASS" ]; then
+    echo "🌊 VANGUARD: Synthesis Complete. Ready to Transmit."
+    exit 0
+else
+    echo "❌ VANGUARD: Synthesis Failed."
+    # We output the evidence for debugging
+    if [ -f "evidence.json" ]; then
+        echo "Evidence:"
+        cat evidence.json
+    fi
+    exit 1
+fi

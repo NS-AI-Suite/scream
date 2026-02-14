@@ -1,0 +1,19 @@
+{
+  "timestamp": "2026-02-14T07:34:02.657Z",
+  "context": "scream-core",
+  "oracles": {
+    "driver": {
+      "status": "SKIP",
+      "details": "Scream.sys missing (Non-Windows)"
+    },
+    "bridge": {
+      "status": "PASS",
+      "details": "bridge.js present"
+    },
+    "oracle3": {
+      "status": "PASS",
+      "details": "AudioContext verified via CDP"
+    }
+  },
+  "verdict": "PASS"
+}
