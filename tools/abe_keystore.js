@@ -9,7 +9,7 @@ function getKey(serviceName, accountName) {
     // -s: service name
     // -a: account name
     console.log(
-      `[ABË] Requesting Access to ${serviceName}::${accountName}... (Please Touch ID)`,
+      `[abe] requesting access to ${serviceName}::${accountName}... (please touch id)`,
     );
     const result = execSync(
       `security find-generic-password -w -s "${serviceName}" -a "${accountName}"`,

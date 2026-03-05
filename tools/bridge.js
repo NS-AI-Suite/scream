@@ -90,6 +90,24 @@ server.bind(() => {
 });
 
 function startStream() {
+  // Check for FFmpeg first
+  const hasFfmpeg = (() => {
+    try {
+      require("child_process").execSync("which ffmpeg");
+      return true;
+    } catch {
+      return false;
+    }
+  })();
+
+  if (!hasFfmpeg) {
+    console.warn(
+      "[WARN] FFmpeg not found. Switching to Carrier Signal (Sine Wave) mode.",
+    );
+    startCarrierSignal();
+    return;
+  }
+
   const ffmpegArgs = [];
 
   // Use '-re' (realtime) if reading from file to simulate proper timing
@@ -172,4 +190,49 @@ function startStream() {
       // Don't log here, let ffmpeg close handle it
     });
   }
+}
+
+function startCarrierSignal() {
+  console.log("[BRIDGE] Generating 440Hz Carrier Signal (Pure JS)...");
+  
+  const sampleRate = 44100;
+  const frequency = 440;
+  const amplitude = 32000; // ~Max 16-bit
+  const frameSize = CHUNK_SIZE; // Matches payload
+  
+  let phase = 0;
+  
+  setInterval(() => {
+    const buffer = Buffer.alloc(CHUNK_SIZE);
+    // Payload is 1152 bytes = 576 samples (16-bit) = 288 stereo frames?
+    // Wait, 16-bit stereo = 4 bytes per sample frame.
+    // 1152 / 4 = 288 samples.
+    
+    for (let i = 0; i < buffer.length; i += 4) {
+      const sample = Math.sin(phase) * amplitude;
+      const val = Math.max(-32768, Math.min(32767, sample));
+      
+      // Write Left (2 bytes)
+      buffer.writeInt16LE(val, i);
+      // Write Right (2 bytes)
+      buffer.writeInt16LE(val, i + 2);
+      
+      phase += (2 * Math.PI * frequency) / sampleRate;
+      if (phase > 2 * Math.PI) phase -= 2 * Math.PI;
+    }
+    
+    const packet = Buffer.concat([HEADER, buffer]);
+    server.send(packet, CONFIG.port, CONFIG.ip, (err) => {
+      if (err) console.error("[TX ERROR]", err);
+    });
+    
+    sequence++;
+    bytesSent += packet.length;
+    
+    if (sequence % 100 === 0) {
+      process.stdout.write(
+        `\r[BRIDGE] Packets: ${sequence} | Bytes: ${bytesSent} | Status: CARRIER `,
+      );
+    }
+  }, (1000 * (CHUNK_SIZE / 4)) / sampleRate); // Time per buffer
 }

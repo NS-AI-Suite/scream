@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-02-14T08:04:32.229Z",
+  "timestamp": "2026-02-15T14:22:01.848Z",
   "context": "scream-core",
   "oracles": {
     "driver": {
@@ -11,9 +11,10 @@
       "details": "bridge.js present"
     },
     "oracle3": {
-      "status": "PASS",
-      "details": "AudioContext verified via CDP"
+      "status": "FAIL",
+      "details": "Chrome CDP check failed",
+      "output": "❌ [Oracle 3] FAIL: Could not reach Chrome on port 9222. Is it running? ()"
     }
   },
-  "verdict": "PASS"
+  "verdict": "FAIL"
 }

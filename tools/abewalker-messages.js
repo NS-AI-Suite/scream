@@ -27,7 +27,7 @@ LIMIT ${LIMIT};
 `;
 
 function runQuery() {
-    console.log(`[AbëWALKER] Connecting to Neural Link: ${DB_PATH}`);
+    console.log(`[abewalker] Connecting to Neural Link: ${DB_PATH}`);
 
     const sqlite3 = spawn('sqlite3', [DB_PATH, SQL_QUERY, '-header', '-csv']);
 
@@ -44,8 +44,8 @@ function runQuery() {
 
     sqlite3.on('close', (code) => {
         if (code !== 0) {
-            console.error(`[AbëWALKER] Error accessing nervous system (Exit Code ${code})`);
-            console.error(`[AbëWALKER] STDERR: ${stderrData}`);
+            console.error(`[abewalker] Error accessing nervous system (Exit Code ${code})`);
+            console.error(`[abewalker] STDERR: ${stderrData}`);
             
             if (stderrData.includes('Operation not permitted')) {
                 console.log('\n--- PERMISSION REQUIRED ---');
@@ -58,11 +58,11 @@ function runQuery() {
         }
 
         if (stdoutData.trim() === '') {
-            console.log('[AbëWALKER] No signals detected. (Empty Query Result)');
+            console.log('[abewalker] No signals detected. (Empty Query Result)');
             return;
         }
 
-        console.log('[AbëWALKER] Signal Accepted. Parsing...');
+        console.log('[abewalker] Signal Accepted. Parsing...');
         const lines = stdoutData.trim().split('\n');
         
         // Simple CSV Parsing
@@ -85,14 +85,14 @@ function runQuery() {
             console.log('--- END TRANSMISSION ---\n');
 
         } catch (e) {
-            console.error('[AbëWALKER] Parsing Interrupted:', e);
+            console.error('[abewalker] Parsing Interrupted:', e);
         }
     });
 }
 
 // Check for DB existence
 if (!fs.existsSync(DB_PATH)) {
-    console.error(`[AbëWALKER] Critical Error: Neural Link not found at ${DB_PATH}`);
+    console.error(`[abewalker] Critical Error: Neural Link not found at ${DB_PATH}`);
     process.exit(1);
 }
 

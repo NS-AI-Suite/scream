@@ -6,7 +6,7 @@ const ARTIFACT_PATH = "evidence.json";
 
 const result = {
   timestamp: new Date().toISOString(),
-  context: "scream-core",
+  context: "aura",
   oracles: {
     driver: { status: "UNKNOWN", details: "" },
     bridge: { status: "UNKNOWN", details: "" },

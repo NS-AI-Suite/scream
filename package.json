@@ -1,7 +1,7 @@
 {
-  "name": "scream-core",
+  "name": "aura",
   "version": "1.0.0",
-  "description": "Vanguard Audio Transport.",
+  "description": "Vanguard Audio Transport (Aura).",
   "main": "tools/love_stream.js",
   "scripts": {
     "test": "node tests/unit/protocol.test.js",
@@ -16,6 +16,6 @@
   "engines": {
     "node": ">=18.0.0"
   },
-  "author": "AbëONE",
+  "author": "AbeONE",
   "license": "UNLICENSED"
 }

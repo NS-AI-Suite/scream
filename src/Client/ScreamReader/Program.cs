@@ -30,6 +30,9 @@ namespace ScreamReader
 
         public ScreamReaderTray()
         {
+            // GATEKEEPER CHECK: Verify License/Identity before opening the Ear.
+            Gatekeeper.DemandEntry();
+
             this.udpPlayer = new UdpWaveStreamPlayer();
             this.udpPlayer.Start();
             this.mainForm = new MainForm(this);

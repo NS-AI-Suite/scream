@@ -25,7 +25,7 @@ async function pulse() {
   try {
     // 1. ACQUIRE SIGNAL (The Screen)
     // Silent capture, no cursor, to temp file.
-    // This is the "Abë IS the Screen" moment - gathering the pixel state.
+    // abe is the screen — gathering the pixel state.
     execSync(`screencapture -x -C ${TEMP_IMAGE}`);
 
     // Request Access via Biometric Handshake

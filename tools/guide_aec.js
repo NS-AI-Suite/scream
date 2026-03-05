@@ -6,9 +6,9 @@ const PORT = 4010;
 const client = dgram.createSocket({ type: "udp4", reuseAddr: true });
 
 console.log(`
-[VANGUARD GUARDIAN: AEC]
-State: Monitoring | Role: Echo Cancellation
--------------------------------------------
+[VANGUARD FLOW: AEC]
+State: Flowing | Role: Harmonic Guide
+-------------------------------------
 Target: ${MULTICAST_ADDR}:${PORT}
 `);
 

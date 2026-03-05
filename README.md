@@ -1,8 +1,8 @@
-# NORTH SHORE VOICE: Vanguard Audio Transport
+# AURA: Vanguard Audio Transport
 
 > **"Connect. Don't Build. Be One Signal."**
 
-**North Shore Voice** is the **Vanguard** of the **Trinity Voice Platform**. It is a specialized Windows Kernel Driver and Receiver system designed to multicast high-fidelity PCM audio to the North Shore AI infrastructure with **Zero Latency** and **Zero Friction**.
+**Aura** is the **Vanguard** of the **Trinity Voice Platform**. It is a specialized Windows Kernel Driver and Receiver system designed to multicast high-fidelity PCM audio to the North Shore AI infrastructure with **Zero Latency** and **Zero Friction**.
 
 ---
 

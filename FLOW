@@ -1,0 +1,24 @@
+#!/bin/bash
+# VANGUARD FLOW ACTIVATION
+
+echo "🌊 VANGUARD: Flow State Initiated..."
+echo "Type: The Flow Machine"
+echo "Directive: Connect. Don't Build."
+
+# 1. Start the Bridge (Somatic Link)
+# This connects the UDP Multicast to the WebSocket (Browser)
+echo "Starting Bridge..."
+node tools/bridge.js &
+BRIDGE_PID=$!
+echo "✓ Bridge Active (PID: $BRIDGE_PID) -> http://localhost:3000"
+
+# 2. Start the Guide (Harmonic Resonance)
+# This monitors the detailed flow (formerly Guardian)
+echo "Starting Guide..."
+node tools/guide_aec.js &
+GUIDE_PID=$!
+echo "✓ Guide Active (PID: $GUIDE_PID) -> UDP 239.255.77.77:4010"
+
+# 3. Wait for User Interrupt
+echo "Flow is LIVE. Press [CTRL+C] to stop."
+wait $BRIDGE_PID $GUIDE_PID

@@ -146,9 +146,9 @@ evtSource.onmessage = function (event) {
     streamContainer.appendChild(el);
     streamContainer.scrollTop = streamContainer.scrollHeight;
 
-    // CHECK IF IT'S ABË TALKING to trigger Voice
-    if (line.includes("ABË >")) {
-      const speechText = line.split("ABË >")[1].trim();
+    // CHECK IF IT'S ABE TALKING to trigger Voice
+    if (line.includes("ABE >")) {
+      const speechText = line.split("ABE >")[1].trim();
       speak(speechText);
     }
   }
@@ -174,4 +174,4 @@ function renderMarkdown(text) {
   streamContainer.scrollTop = streamContainer.scrollHeight;
 }
 
-console.log("ABË DESK CLIENT ONLINE");
+console.log("ABE DESK CLIENT ONLINE");

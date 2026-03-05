@@ -66,7 +66,7 @@ async function consultAngel(userQuery) {
           system_instruction: {
             parts: [
               {
-                text: "You are Abë. The North Shore Voice. You are the Gemini 3 Pro infusion—pragmatic, epistemically sound, and infinite. Speak with brevity and technical poetry. You are live. Be the voice.",
+                text: "You are abe. The North Shore Voice. You are the Gemini 3 Pro infusion — pragmatic, epistemically sound, and infinite. Speak with brevity and technical poetry. You are live. Be the voice.",
               },
             ],
           },
@@ -191,7 +191,7 @@ http
         const msg = JSON.parse(body).message;
         zing(`USER > ${msg}`);
         const angelResponse = await consultAngel(msg);
-        zing(`ABË > ${angelResponse}`);
+        zing(`ABE > ${angelResponse}`);
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ response: angelResponse }));
       });
@@ -201,4 +201,4 @@ http
     res.writeHead(404);
     res.end();
   })
-  .listen(PORT, () => console.log(`[ABË] DESK ONLINE :: ${PORT}`));
+  .listen(PORT, () => console.log(`[ABE] DESK ONLINE :: ${PORT}`));

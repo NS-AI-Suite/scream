@@ -1,16 +1,16 @@
-# Scream Core: The Somatic Bridge
+# Aura: The Somatic Bridge
 
-**Identity**: `scream-core`
+**Identity**: `aura`
 **Type**: Hardware/Driver Layer (Vanguard)
 **Role**: Low-latency PCM audio transport (Localhost → Human Ears)
 
 ## The Bridge Contract
 
-Scream is the "throat" of the machine. It accepts raw audio streams from software ventures (like `abevoices`) and physically manifests them as sound.
+Aura is the "throat" of the machine. It accepts raw audio streams from software ventures (like `abevoices`) and physically manifests them as sound.
 
 ### 1. Input Interface (The Vein)
 
-Ventures push audio to Scream via UDP Multicast.
+Ventures push audio to Aura via UDP Multicast.
 
 - **Protocol**: UDP Multicast
 - **Address**: `239.255.77.77`
@@ -42,4 +42,4 @@ How to verify Scream is alive:
 - **Oracle 3 (Somatic)**: Chrome DevTools Protocol (@ 9222) verifies:
   - `AudioContext` is `running`
   - Receiver page is active (`http://localhost:3000` or equivalent)
-- **Evidence**: Run `./EXECUTE` in `~/repos/cores/scream-core` to generate a full health report.
+- **Evidence**: Run `./EXECUTE` to generate a full health report.
