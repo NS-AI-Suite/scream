@@ -2,15 +2,13 @@
 const evtSource = new EventSource("/stream");
 const streamContainer = document.getElementById("streamContainer"); // Ensure definition
 
-// VOICE & RECOGNITION SETUP
-const SpeechRecognition =
-  window.SpeechRecognition || window.webkitSpeechRecognition;
-const recognition = new SpeechRecognition();
-recognition.continuous = false;
-recognition.lang = "en-US";
-recognition.interimResults = false;
-
-const synth = window.speechSynthesis;
+// VOICE CAPTURE STATE
+let mic_stream = null;
+let media_recorder = null;
+let audio_chunks = [];
+let vad_active = false;
+let silence_timer = null;
+let safety_timer = null;
 let isSpeaking = false;
 
 const summonBtn = document.getElementById("summonButton");
@@ -40,46 +38,162 @@ const playWhoosh = () => {
   oscillator.stop(audioCtx.currentTime + 0.5);
 };
 
-// ACTIONS
-summonBtn.addEventListener("click", () => {
-  playWhoosh();
-  voiceStatus.innerText = "LISTENING...";
-  voiceStatus.style.color = "var(--neon-green)";
-  summonBtn.classList.add("active");
-  try {
-    recognition.start();
-  } catch (e) {
-    console.log("Already listening");
-  }
-});
+// VAD: monitor rms on analyser, resolve when 1.5s silence after speech detected
+function run_vad(analyser) {
+  return new Promise((resolve) => {
+    const buf = new Float32Array(analyser.fftSize);
+    const rms_threshold = 0.015;
+    const silence_ms = 1500;
+    let speech_detected = false;
 
-recognition.onresult = (event) => {
-  const transcript = event.results[0][0].transcript;
+    const tick = () => {
+      analyser.getFloatTimeDomainData(buf);
+      let sum = 0;
+      for (let i = 0; i < buf.length; i++) sum += buf[i] * buf[i];
+      const rms = Math.sqrt(sum / buf.length);
+
+      if (rms > rms_threshold) {
+        speech_detected = true;
+        if (silence_timer) {
+          clearTimeout(silence_timer);
+          silence_timer = null;
+        }
+      } else if (speech_detected && !silence_timer) {
+        silence_timer = setTimeout(() => {
+          resolve();
+        }, silence_ms);
+      }
+
+      if (!vad_active) return;
+      requestAnimationFrame(tick);
+    };
+
+    requestAnimationFrame(tick);
+  });
+}
+
+// STOP RECORDING AND TRANSCRIBE
+function stop_and_transcribe() {
+  vad_active = false;
+  if (silence_timer) { clearTimeout(silence_timer); silence_timer = null; }
+  if (safety_timer) { clearTimeout(safety_timer); safety_timer = null; }
+  if (media_recorder && media_recorder.state !== "inactive") {
+    media_recorder.stop();
+  }
+}
+
+async function transcribe_and_send(blob) {
   voiceStatus.innerText = "PROCESSING";
+  voiceStatus.style.color = "var(--neon-green)";
   summonBtn.classList.remove("active");
 
-  // Send to Server
-  fetch("/input", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message: transcript }),
-  })
-  .then(res => res.json())
-  .then(data => {
-      if (data.response) {
-          speak(data.response);
-      }
-  })
-  .catch(err => console.error("Input failed:", err));
-};
+  let transcript = "";
+  try {
+    const res = await fetch("https://voice.bravetto.ai/transcribe", {
+      method: "POST",
+      headers: { "Content-Type": blob.type || "audio/webm" },
+      body: blob,
+    });
+    if (!res.ok) throw new Error("Transcribe failed: " + res.status);
+    const data = await res.json();
+    transcript = (data.text || "").trim();
+  } catch (err) {
+    console.error("Transcription error:", err);
+    voiceStatus.innerText = "ERR_TRANSCRIBE";
+    voiceStatus.style.color = "var(--neon-red)";
+    setTimeout(() => {
+      voiceStatus.innerText = "OFFLINE";
+      voiceStatus.style.color = "#666";
+    }, 2000);
+    return;
+  }
 
-recognition.onend = () => {
-  if (!isSpeaking) {
+  if (!transcript) {
     voiceStatus.innerText = "OFFLINE";
     voiceStatus.style.color = "#666";
-    summonBtn.classList.remove("active");
+    return;
   }
-};
+
+  try {
+    const res = await fetch("/input", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: transcript }),
+    });
+    const data = await res.json();
+    if (data.response) {
+      speak(data.response);
+    }
+  } catch (err) {
+    console.error("Input failed:", err);
+    voiceStatus.innerText = "OFFLINE";
+    voiceStatus.style.color = "#666";
+  }
+}
+
+// ACTIONS
+summonBtn.addEventListener("click", async () => {
+  if (isSpeaking) return;
+
+  playWhoosh();
+  voiceStatus.innerText = "LISTENING";
+  voiceStatus.style.color = "var(--neon-green)";
+  summonBtn.classList.add("active");
+
+  try {
+    if (!mic_stream) {
+      mic_stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+    }
+
+    // build analyser for VAD
+    const vad_ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const source = vad_ctx.createMediaStreamSource(mic_stream);
+    const analyser = vad_ctx.createAnalyser();
+    analyser.fftSize = 2048;
+    source.connect(analyser);
+
+    // pick mime type
+    const mime = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
+      ? "audio/webm;codecs=opus"
+      : "audio/mp4";
+
+    audio_chunks = [];
+    media_recorder = new MediaRecorder(mic_stream, { mimeType: mime });
+
+    media_recorder.ondataavailable = (e) => {
+      if (e.data && e.data.size > 0) audio_chunks.push(e.data);
+    };
+
+    media_recorder.onstop = async () => {
+      await vad_ctx.close();
+      const blob = new Blob(audio_chunks, { type: mime });
+      audio_chunks = [];
+      await transcribe_and_send(blob);
+    };
+
+    media_recorder.start(100); // collect chunks every 100ms
+    vad_active = true;
+
+    // 30s safety cap
+    safety_timer = setTimeout(() => {
+      stop_and_transcribe();
+    }, 30000);
+
+    // run VAD — resolves after 1.5s silence post-speech
+    await run_vad(analyser);
+    stop_and_transcribe();
+
+  } catch (err) {
+    console.error("Mic error:", err);
+    voiceStatus.innerText = "ERR_MIC";
+    voiceStatus.style.color = "var(--neon-red)";
+    summonBtn.classList.remove("active");
+    setTimeout(() => {
+      voiceStatus.innerText = "OFFLINE";
+      voiceStatus.style.color = "#666";
+    }, 2000);
+  }
+});
 
 // SPEAK BACK (ElevenLabs Integration)
 async function speak(text) {
